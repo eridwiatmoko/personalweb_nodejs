@@ -7,9 +7,9 @@ const db = require("./connection/db");
 const upload = require("./middlewares/uploadFile");
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
-let isLogin = true;
+// let isLogin = true;
 
 const month = [
   "January",
@@ -24,16 +24,6 @@ const month = [
   "October",
   "November",
   "December",
-];
-
-let blogs = [
-  {
-    title: "Pasar Coding di Indonesia Dinilai Masih Menjanjikan",
-    post_at: "12 Jul 2021 - 22:19 WIB",
-    author: "Ichsan Emrald Alamsyah",
-    content:
-      "Ketimpangan sumber daya manusia (SDM) di sektor digital masih menjadi isu yang belum terpecahkan. Berdasarkan penelitian ManpowerGroup, ketimpangan SDM global, termasuk Indonesia, meningkat dua kali lipat dalam satu dekade terakhir. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quam, molestiae numquam! Deleniti maiores expedita eaque deserunt quaerat! Dicta, eligendi debitis?",
-  },
 ];
 
 app.set("view engine", "hbs"); // set template engine
@@ -117,7 +107,7 @@ app.post("/login", (req, res) => {
       }
 
       let isMatch = bcrypt.compareSync(password, result.rows[0].password);
-      console.log(isMatch);
+
       if (isMatch) {
         req.session.isLogin = true;
         req.session.user = {
