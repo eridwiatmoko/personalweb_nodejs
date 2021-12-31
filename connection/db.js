@@ -9,7 +9,6 @@ const dbPool = new Pool({
   ssl: {
      rejectUnauthorized: false,
   },
-});
 
 });
 
