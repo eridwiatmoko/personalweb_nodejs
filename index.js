@@ -145,7 +145,6 @@ app.get("/blog", (req, res) => {
     if (err) throw err;
 
     client.query(query, (err, result) => {
-      done();
 
       let data = result.rows.map(function (blog) {
         return {
