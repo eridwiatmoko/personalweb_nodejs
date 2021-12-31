@@ -146,9 +146,8 @@ app.get("/blog", (req, res) => {
 
     client.query(query, (err, result) => {
       done();
-      let data = result.rows;
 
-      data = data.map(function (blog) {
+      let data = result.rows.map(function (blog) {
         return {
           ...blog,
           post_at: getFullTime(blog.post_at),
