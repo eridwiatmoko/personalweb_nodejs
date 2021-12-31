@@ -144,6 +144,16 @@ app.get("/blog", (req, res) => {
 
     client.query(query, (err, result) => {
       let data = result.rows||[]
+      
+      if(data.length == 0 ) {
+        return res.render("blog", {
+        isLogin: req.session.isLogin,
+        blogs: data,
+        user: req.session.user,
+      });
+        
+      }
+      
       data = data.map(function (blog) {
         return {
           ...blog,
