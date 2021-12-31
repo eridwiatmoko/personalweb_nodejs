@@ -143,7 +143,7 @@ app.get("/blog", (req, res) => {
     if (err) throw err;
 
     client.query(query, (err, result) => {
-      let data = result.rows||[]
+      let data = []
       
       if(data.length == 0 ) {
         return res.render("blog", {
