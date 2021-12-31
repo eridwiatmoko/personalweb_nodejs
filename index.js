@@ -137,7 +137,7 @@ app.get("/contact-me", (req, res) => {
 });
 
 app.get("/blog", (req, res) => {
-  let query = `SELECT blog.id, blog.title, blog.content, blog.image, tb_user.name AS author, blog.author_id, blog.post_at FROM blog LEFT JOIN tb_user ON blog.author_id = tb_user.id`;
+  let query = `SELECT blog.id, blog.title, blog.content, blog.image, tb_user.name AS author, blog.author_id, blog.post_at FROM tb_user LEFT JOIN blog ON blog.author_id = tb_user.id`;
 
   db.connect((err, client, done) => {
     if (err) throw err;
