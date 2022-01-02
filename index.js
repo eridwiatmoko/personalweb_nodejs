@@ -72,17 +72,29 @@ app.post("/register", (req, res) => {
 
   db.connect((err, client, done) => {
     if (err) throw err;
-
-    client.query(
-      `INSERT INTO tb_user(
-      name, email, password)
-      VALUES ( '${name}', '${email}', '${hashedPassword}' )`,
-      (err, result) => {
-        done();
-
-        res.redirect("/login");
+    let emails = [];
+    client.query(`SELECT email FROM tb_user`, (err, result) => {
+      for (const user of result.rows) {
+        emails.push(user.email);
       }
-    );
+
+      let isRegistered = emails.includes(email);
+      if (isRegistered) {
+        req.flash("danger", "Email already in use");
+        return res.redirect("/register");
+      } else {
+        client.query(
+          `INSERT INTO tb_user(
+          name, email, password)
+          VALUES ( '${name}', '${email}', '${hashedPassword}' )`,
+          (err, result) => {
+            done();
+
+            res.redirect("/login");
+          }
+        );
+      }
+    });
   });
 });
 
@@ -101,7 +113,7 @@ app.post("/login", (req, res) => {
     client.query(query, function (err, result) {
       if (err) throw err;
 
-      if (result.rows.length == 0) {
+      if (result.rows.length == 0 || !email || !password) {
         req.flash("danger", "Email and password don't match!");
         return res.redirect("/login");
       }
@@ -137,23 +149,16 @@ app.get("/contact-me", (req, res) => {
 });
 
 app.get("/blog", (req, res) => {
-  let query = `SELECT blog.id, blog.title, blog.content, blog.image, tb_user.name AS author, blog.author_id, blog.post_at FROM tb_user LEFT JOIN blog ON blog.author_id = tb_user.id`;
+  let query = `SELECT blog.id, blog.title, blog.content, blog.image, tb_user.name AS author, blog.author_id, blog.post_at
+                FROM blog LEFT JOIN tb_user
+                ON blog.author_id = tb_user.id`;
 
   db.connect((err, client, done) => {
     if (err) throw err;
 
     client.query(query, (err, result) => {
-      let data = result.rows || []
-      
-      if(data.length == 0 ) {
-        return res.render("blog", {
-        isLogin: req.session.isLogin,
-        blogs: data,
-        user: req.session.user,
-      });
-        
-      }
-      
+      let data = result.rows;
+
       data = data.map(function (blog) {
         return {
           ...blog,
@@ -206,16 +211,16 @@ app.get("/edit-blog/:id", (req, res) => {
   });
 });
 
-app.post("/update-blog/:id", (req, res) => {
+app.post("/update-blog/:id", upload.single("image"), (req, res) => {
   let data = req.body;
-  data.image = "demo.jpg";
+  let image = req.file.filename;
 
   db.connect((err, client, done) => {
     if (err) throw err;
 
     client.query(
       `UPDATE blog
-      SET title='${data.title}', image='${data.image}', content='${data.content}'
+      SET title='${data.title}', image='${image}', content='${data.content}'
       WHERE id=${req.params.id}`,
       (err, result) => {
         done();
