@@ -159,8 +159,8 @@ app.get("/blog", (req, res) => {
     client.query(query, (err, result) => {
       
       if (result.rows.length == 0) {
-        return res.render("blog", isLogin: req.session.isLogin,
-        user: req.session.user,)
+        return res.render("blog", {isLogin: req.session.isLogin,
+        user: req.session.user})
       }
       let data = result.rows;
 
